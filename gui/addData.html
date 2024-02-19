@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="addData.css"></link>
+  <script src="addData.js"></script>
+</head>
+<body onload = "loadData()">
+  <h1>add training data</h1>
+  <div id="dataCount">entries 0</div>
+  <div id="data">
+    <button class="data" id="d0" onclick="change(0)"></button>
+    <button class="data" id="d1" onclick="change(1)"></button>
+    <button class="data" id="d2" onclick="change(2)"></button>
+    
+    <button class="data" id="d3" onclick="change(3)"></button>
+    <button class="data" id="d4" onclick="change(4)"></button>
+    <button class="data" id="d5" onclick="change(5)"></button>
+
+    <button class="data" id="d6" onclick="change(6)"></button>
+    <button class="data" id="d7" onclick="change(7)"></button>
+    <button class="data" id="d8" onclick="change(8)"></button>
+
+    <button class="data" id="d9" onclick="change(9)"></button>
+    <button class="data" id="d10" onclick="change(10)"></button>
+    <button class="data" id="d11" onclick="change(11)"></button>
+
+    <button class="data" id="d12" onclick="change(12)"></button>
+    <button class="data" id="d13" onclick="change(13)"></button>
+    <button class="data" id="d14" onclick="change(14)"></button>
+  </div>
+  <div id="numberInput">
+    <button onclick="store(1)" id="b1">1</button>
+    <button onclick="store(2)" id="b2">2</button>
+    <button onclick="store(3)" id="b3">3</button>
+    <button onclick="store(4)" id="b4">4</button>
+    <button onclick="store(5)" id="b5">5</button>
+
+    <button onclick="store(6)" id="b6">6</button>
+    <button onclick="store(7)" id="b7">7</button>
+    <button onclick="store(8)" id="b8">8</button>
+    <button onclick="store(9)" id="b9">9</button>
+    <button onclick="store(0)" id="b0">0</button>
+  </div>
+  <button type="submit" onclick="save()">save</button>
+
+  <div id="response"></div>
+  <a href="menu.html">back to menu</a>
+</body>
+</html>
