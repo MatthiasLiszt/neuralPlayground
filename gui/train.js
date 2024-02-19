@@ -220,24 +220,30 @@ function testBack() {
 }
 
 function testItBack() {
+  // reduce DATA to learn
+  DATA.length = 4;
   var w = initWeights(0.1);
   var b = initBias(0.1);
-  var p5 = patternToInput(DATA[5].pattern);
-  p5 = p5.map(x => x = x == 0 ? 0.001 : x);
+  var sample = DATA[2];
+  var px = patternToInput(sample.pattern);
+  
+  var o = calc4Layers(px, w, b);
+  var res = backprop4Layer(o, w, b, sample.sign, px);
 
-  var o = calc4Layers(p5, w, b);
-  var res = backprop4Layer(o, w, b, DATA[5].sign, p5);
-
-  for (var k = 0; k < 4; ++k) {
+  var rounds = 0;
+  var success = false;
+  for (var k = 0; k < 1024; ++k) {
     for (var one of DATA) {
       var p = patternToInput(one.pattern);
-      while(calcError(p, res.w, res.b, one.sign) > 0.1) {
+      while(calcError(p, res.w, res.b, one.sign) > 0.07  ) {
         o = calc4Layers(p, res.w, res.b);
         res = backprop4Layer(o, res.w, res.b, one.sign, p);
+        ++rounds;
+        if(!(rounds%2.5e4)) success = true;
       }
-      //console.log(`trained ${one.sign}`);
+      if(success) console.log(`learning round ${rounds}`);
+      success = false;
     }
-    if(k%128 == 0)console.log('.');
   }
 
   var right = 0;
@@ -247,16 +253,14 @@ function testItBack() {
     if (one.sign == findMax(o).at ) {
       showFinalLayers(o);
       console.log(`brain recognized ${one.sign} +`);
-      var e3 = calcError(p5, res.w, res.b, 3);
+      var e3 = calcError(px, res.w, res.b, 3);
       var ex = calcError(p, res.w, res.b, one.sign);
-      console.log(`error for 3 ${e3} , error for ${one.sign} ${ex}`);
+      console.log(`error for ${sample.sign} ${e3} , error for ${one.sign} ${ex}`);
       ++right;
-    } else {
-      //console.log(`brain failed for ${one.sign} `);
-    }
+    } 
   }
 
-  return {w: res.w, b: res.b, p: p5, right: right/DATA.length};
+  return {w: res.w, b: res.b, p: px, right: right/DATA.length, rounds: rounds};
 }
 
 
