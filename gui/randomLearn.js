@@ -12,7 +12,7 @@ function randomChange(Weights) {
   var layer = Math.floor(Math.random() * (Settings.layers - 1));
   var neuron = Math.floor(Math.random() * Settings.neurons[layer + 1]);
   var index = Math.floor(Math.random() * Settings.neurons[layer]);
-  var rate = Settings.learningRate * 1;
+  var rate = Settings.learningRate;
   var change = Math.random() > 0.5 ? 1 - rate : 1 + rate;
   Changed[layer][neuron][index] *= change;
   // console.log(layer + ' ' + neuron + ' ' + Changed[layer][neuron][index] + ' change ' + change);
@@ -23,7 +23,7 @@ function randomChangeBias(Bias) {
   var Changed = JSON.parse(JSON.stringify(Bias));
   var layer = Math.floor(Math.random() * (Settings.layers - 1));
   var index = Math.floor(Math.random() * Settings.neurons[layer]);
-  var rate = Settings.learningRate * 2;
+  var rate = Settings.learningRate;
   var change = Math.random() > 0.5 ? 1 - rate : 1 + rate;
   Changed[layer][index] *= change;
   return Changed;
@@ -60,7 +60,7 @@ function testRandomAll() {
   var w = initWeights(0.1);
   var b = initBias(0);
   var p1 = patternToInput(DATA[0].pattern);
-  var p9 = patternToInput(DATA[9].pattern);
+  //var p9 = patternToInput(DATA[9].pattern);
   var l = [];
   for (var i = 0; i < DATA.length; ++i) {
     var p = patternToInput(DATA[i].pattern);
@@ -71,8 +71,8 @@ function testRandomAll() {
   }
   var o = calcFourLayers(p1, l.w, l.b);
   console.log(JSON.stringify(o));
-  o = calcFourLayers(p9, l.w, l.b);
-  console.log(JSON.stringify(o));
+  //o = calcFourLayers(p9, l.w, l.b);
+  //console.log(JSON.stringify(o));
   return {w: l.w, b: l.b, p: p};
 }
 
@@ -80,29 +80,28 @@ function randomAllLearn(Weights, Bias, steps) {
   var preError = calcAllError(Weights, Bias);
   for (var i = 0; i < steps; ++i) {
     var Changed = randomChange(Weights);
-    //var nBias = randomChangeBias(Bias);
+    var nBias = randomChangeBias(Bias);
     var oldError = calcAllError(Weights, Bias);
-    //var newError = calcAllError(Changed, nBias);
-    var newError = calcAllError(Changed, Bias);
+    var newError = calcAllError(Changed, nBias);
+    //var newError = calcAllError(Changed, Bias);
     if (!(i % 5000) && newError < oldError) {
       console.log('!!! ' + newError + ' at step ' + i);
     }
     Weights = newError > (1 - Settings.learningRate) * oldError && newError < oldError ? Changed : Weights;
-    //nBias = newError > (1 - Settings.learningRate) * oldError && newError < oldError ? nBias : Bias;
+    nBias = newError > (1 - Settings.learningRate) * oldError && newError < oldError ? nBias : Bias;
     if (i == steps - 2) console.log('final ' + newError);
   }
   return {w: Weights, b: Bias, preError: preError};
 }
 
 function testRandomIt() {
+  DATA.length = 2;
+  //Settings.learningRate = 0.001;
   var w = initWeights(0.1);
-  var b = initBias(0);
-  var p5 = patternToInput(DATA[5].pattern);
-  var l = randomAllLearn(w, b, 8e4);
-  //var o = calcFourLayers(p5, l.w, l.b);
-  //console.log(JSON.stringify(o));
-  //console.log(`max should be at ${DATA[5].sign} --- control ${o[DATA[5].sign]}`);
-  //console.log(`brain says it's a ${findMax(o).at}`);
+  var b = initBias(0.05);
+  var p0 = patternToInput(DATA[0].pattern);
+  var l = randomAllLearn(w, b, 1e6);
+  
   var right = 0;
   for (let one of DATA) {
     var p = patternToInput(one.pattern);
@@ -111,10 +110,8 @@ function testRandomIt() {
       console.log(JSON.stringify(o));
       console.log(`brain recognized ${one.sign} +`);
       ++right;
-    } else {
-      //console.log(`brain failed for ${one.sign} `);
     }
   }
-  console.log(`brain got ${right / DATA.length} right`);
-  return {w: l.w, b: l.b, p: p5, right: right / DATA.length};
+  console.log(`brain got ${right} of ${DATA.length} right`);
+  return {w: l.w, b: l.b, p: p0, right: right / DATA.length};
 }

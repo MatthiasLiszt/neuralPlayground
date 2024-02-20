@@ -1,4 +1,4 @@
-
+//version for just 15 input neurons
 function patternToInput(pattern) {
   var rest = pattern;
   var input = [];
@@ -7,17 +7,39 @@ function patternToInput(pattern) {
     rest *= 0.5;
     rest = Math.floor(rest);
   }
+  while(input.length < 15) {
+    input.push(0);
+  }
   return input;
 }
 
-function initWeights(value) {
+//version for 25 input neurons
+/*function patternToInput(pattern) {
+  var rest = pattern;
+  var input = [];
+  var index = 1;
+  while(rest > 0) {
+    input.push(rest % 2);
+    rest *= 0.5;
+    rest = Math.floor(rest);
+    if (index%3 == 0) {
+      input.push(0);
+      input.push(0);
+    }
+    ++index;
+  }
+  return input;
+}*/
+
+function initWeights(value, accuracy) {
+  accuracy = accuracy === undefined ? 0 : accuracy;
   var Weights = [];
   for(var i = 1; i < Settings.layers; ++i) {
     Weights.push([]);
     for(var j = 0; j < Settings.neurons[i]; ++j) {
       Weights[i - 1].push([]);
       for(var k = 0; k < Settings.neurons[i-1]; ++k) {
-        Weights[i - 1][j].push(value);
+        Weights[i - 1][j].push(value + Math.random() * accuracy);
       }
     }
   }
@@ -191,7 +213,7 @@ function calcError(input, Weights, Bias, desired) {
 } 
 
 function learnOne(steps) {
-  var w = initWeights(0.1);
+  var w = initWeights(0.05);
   var b = initBias(0.05);
   var p5 = patternToInput(DATA[5].pattern);
   var o = calc4Layers(p5, w, b);
@@ -221,21 +243,33 @@ function testBack() {
 
 function testItBack() {
   // reduce DATA to learn
-  DATA.length = 4;
-  var w = initWeights(0.1);
-  var b = initBias(0.1);
+  //var patch = DATA.slice(DATA.length - 4);
+  var patch = DATA;
+  var w = initWeights(0.25, 0.1);
+  var b = initBias(0.025);
   var sample = DATA[2];
   var px = patternToInput(sample.pattern);
   
   var o = calc4Layers(px, w, b);
   var res = backprop4Layer(o, w, b, sample.sign, px);
 
+  // accuracy parameter seems to be critical for the result -- so far 0.07 does well
+  res = trainPatchRandomly(res, patch, 0.075);
+  var rounds = res.rounds;
+
+  var right = checkLearningResults(res, patch);
+
+  return {w: res.w, b: res.b, p: px, right: right/patch.length, rounds: rounds, patch: patch};
+}
+
+function trainPatch(WeightsBias, patch, accuracy) {
+  var res = WeightsBias;
   var rounds = 0;
   var success = false;
   for (var k = 0; k < 1024; ++k) {
-    for (var one of DATA) {
+    for (var one of patch) {
       var p = patternToInput(one.pattern);
-      while(calcError(p, res.w, res.b, one.sign) > 0.07  ) {
+      while(calcError(p, res.w, res.b, one.sign) > accuracy) {
         o = calc4Layers(p, res.w, res.b);
         res = backprop4Layer(o, res.w, res.b, one.sign, p);
         ++rounds;
@@ -245,22 +279,62 @@ function testItBack() {
       success = false;
     }
   }
+  return {w: res.w, b: res.b, rounds: rounds}
+}
 
+function trainPatchRandomly(WeightsBias, patch, accuracy) {
+  var res = WeightsBias;
+  var rounds = 0;
+  var success = false;
+  for (var k = 0; k < 2048 * patch.length; ++k) {
+    var x = Math.floor(Math.random() * (patch.length + 1)) % patch.length;
+    var one = patch[x];
+    var p = patternToInput(one.pattern);
+    while(calcError(p, res.w, res.b, one.sign) > accuracy) {
+      o = calc4Layers(p, res.w, res.b);
+      res = backprop4Layer(o, res.w, res.b, one.sign, p);
+      ++rounds;
+      if(!(rounds%2.5e4)) success = true;
+    }
+    if(success) console.log(`learning round ${rounds}`);
+    success = false;
+    
+  }
+  return {w: res.w, b: res.b, rounds: rounds}
+}
+ 
+function checkLearningResults(WeightsBias, patch) {
+  var res = WeightsBias;
   var right = 0;
-  for (let one of DATA) {
+  for (let one of patch) {
     var p = patternToInput(one.pattern);
     o = calcFourLayers(p, res.w, res.b);
     if (one.sign == findMax(o).at ) {
       showFinalLayers(o);
-      console.log(`brain recognized ${one.sign} +`);
-      var e3 = calcError(px, res.w, res.b, 3);
+      console.log(`brain recognized ${one.sign}`);
       var ex = calcError(p, res.w, res.b, one.sign);
-      console.log(`error for ${sample.sign} ${e3} , error for ${one.sign} ${ex}`);
+      console.log(`error for ${one.sign} ${ex}`);
       ++right;
     } 
   }
+  return right;
+}
 
-  return {w: res.w, b: res.b, p: px, right: right/DATA.length, rounds: rounds};
+
+function learnNewDigit(WeightsBias, digit, patch, accuracy) {
+  var newPatch = patch;
+  var i = 0;
+  while(DATA[i].sign != digit){
+    ++i;
+  }
+
+  newPatch.push(DATA[i]);
+  var res = trainPatch(WeightsBias, newPatch, accuracy);
+  var rounds = res.rounds;
+  var right = checkLearningResults(res, newPatch);
+
+  console.log(JSON.stringify(newPatch));
+  return {w: res.w, b: res.b, rounds: rounds, right: right}
 }
 
 
@@ -305,7 +379,7 @@ function findMax(field) {
 function showFinalLayers(data) {
   var format = [];
   for(var i = 0; i < data.length; ++i) {
-    var s = data[i].toString();
+    var s = data[i] < 1e-6 ? '0' : data[i].toString();
     format.push(`(${i}) ${s.substring(0,6)}`);
   }
   console.log(format.join('  '));

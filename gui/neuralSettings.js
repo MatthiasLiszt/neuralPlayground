@@ -1,6 +1,6 @@
 var Settings = {
   layers: 4,
-  neurons: [15, 9, 6, 10],
+  neurons: [15, 9, 9, 10],
   learningRate: 0.01,
   activation: 'sigmoid',
   f: x => 1/(1 + Math.E**(-x))
