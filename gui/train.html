@@ -3,13 +3,71 @@
   <head>
     <script src="neuralSettings.js"></script>
     <script src="randomLearn.js"></script>
+    <script src="classicBackpropagation.js"></script>
+    <script src="fastBackpropagation.js"></script>
     <!--script src="addData.js"></script-->
-    <script src="cheat.js"></script>
+    <script src="../cheats/trainingsData.js"></script>
   </head>
   <body>
     <h1>training</h1>
     <div id="dataCount">entries 0</div>
+    <ul>
+      <button onclick = "loadDefaultTrainingData(); Cache = {}; Mode = 'idle'">load default data</button>
+      <button onclick = "Cache = testItBy(backprop4Layer); Mode = 'training'">train with classic backpropagation</button>
+      <button onclick = "extractBrain()">extract and show trained neural net</button>
+      <button onclick = "compressBrain()">compress and show trained neural net</button>
+    </ul>
+      <script src="train.js"></script>
     <div id="response"></div>
-    <script src="train.js"></script>
+    <a href="menu.html">back to menu</a>
+    <script>
+      var Compressed = {};
+      var Response = document.getElementById('response');
+      var Time = 0;
+      var IntervalLength = 5;
+      setInterval(() => {
+        if(Mode == 'training' && Cache == {}) {
+          Time += IntervalLength;
+          Response.textContent = `${Time} s passed`;
+        }
+        if(Mode == 'training' && DATA == []) {
+          Response.textContent = `no training data loaded`;
+        }
+        if(Mode == 'training' && Cache.right !== undefined) {
+          Mode = 'idle';
+          Response.textContent = `${Cache.right} right at ${Cache.rounds} rounds`;
+        }
+      },IntervalLength * 5);
+
+      function extractBrain() {
+        delete Cache.patch;
+        delete Cache.p;
+        Mode = 'show';
+        Response.textContent = `${JSON.stringify(Cache)}`;
+      } 
+
+      function compressBrain() {
+        delete Cache.patch;
+        delete Cache.p;
+        Mode = 'show';
+        for(var layer = 0; layer <  Cache.w.length; ++layer) {
+          for(var  neuron = 0; neuron < Cache.w[layer].length; ++neuron) {
+            for(var weight = 0; weight < Cache.w[layer][neuron].length; ++weight) {
+              value = Cache.w[layer][neuron][weight];
+              var x = Math.floor(value/2e-12);
+              Cache.w[layer][neuron][weight] = Math.floor(x * 2e-12 * 1e4)/1e4;
+            }
+          }
+        }
+        for(var layer = 0; layer <  Cache.w.length; ++layer) {
+          for(var  neuron = 0; neuron < Cache.w[layer].length; ++neuron) {
+            value = Cache.b[layer][neuron];
+            var x = Math.floor(value/2e-12);
+            Cache.b[layer][neuron] = Math.floor(x * 2e-12 * 1e4)/1e4;
+          }
+        }
+        Response.textContent = `${JSON.stringify(Cache)}`;
+      }
+    </script>
   </body>
 </html>

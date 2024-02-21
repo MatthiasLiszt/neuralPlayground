@@ -95,10 +95,8 @@ function randomAllLearn(Weights, Bias, steps) {
 }
 
 function testRandomIt() {
-  DATA.length = 2;
-  //Settings.learningRate = 0.001;
-  var w = initWeights(0.1);
-  var b = initBias(0.05);
+  var w = initWeights(0.25,0.1);
+  var b = initBias(0.025);
   var p0 = patternToInput(DATA[0].pattern);
   var l = randomAllLearn(w, b, 1e6);
   
@@ -115,3 +113,14 @@ function testRandomIt() {
   console.log(`brain got ${right} of ${DATA.length} right`);
   return {w: l.w, b: l.b, p: p0, right: right / DATA.length};
 }
+
+function further(data){
+  var w = data.w;
+  var b = data.b;
+  var p = data.p;
+  var l = randomLearn(p, w, b, 1, 8e4);
+  var o = calcFourLayers(p, l.w, l.b);
+  console.log(JSON.stringify(o));
+  return data;
+}
+

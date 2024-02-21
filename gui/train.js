@@ -1,3 +1,7 @@
+var DATA = [];
+var Cache = {};
+var Mode = 'idle';
+
 //version for just 15 input neurons
 function patternToInput(pattern) {
   var rest = pattern;
@@ -12,24 +16,6 @@ function patternToInput(pattern) {
   }
   return input;
 }
-
-//version for 25 input neurons
-/*function patternToInput(pattern) {
-  var rest = pattern;
-  var input = [];
-  var index = 1;
-  while(rest > 0) {
-    input.push(rest % 2);
-    rest *= 0.5;
-    rest = Math.floor(rest);
-    if (index%3 == 0) {
-      input.push(0);
-      input.push(0);
-    }
-    ++index;
-  }
-  return input;
-}*/
 
 function initWeights(value, accuracy) {
   accuracy = accuracy === undefined ? 0 : accuracy;
@@ -86,115 +72,6 @@ function calc4Layers(input, Weights, Bias) {
   return {last: o3, O: [o1, o2, o3]};
 }
 
-// only supports sigmoid function as activation function
-function backprop4Layer(outputs, Weights, Bias, target, input) {
-  var Changed = {w: [] , b: []};
-
-  //create targets from target value
-  var targets = [];
-  for (var i = 0; i < 10; ++i) {
-    var value = 0.01;
-    value = i == target ? 1 : value;
-    targets.push(value);
-  }
-
-  // calculate little deltas
-  
-  // last layer
-  var lastLayerDelta = [];
-  for (var i = 0; i < Settings.neurons[3]; ++i) {
-    var oj = outputs.last[i];
-    var tj = targets[i];
-    var dj = (oj - tj) * oj * (1 - oj);
-
-    lastLayerDelta.push(dj);
-  }
-
-  var lastLayerBiasDelta = [];
-  // 2nd layer 
-  var secondLayerDelta = [];
-  for (var i = 0; i < Settings.neurons[2]; ++i) {
-    var sum = 0;
-    var oi = outputs.O[1][i];
-    
-    for (var j = 0; j < Settings.neurons[3]; ++j) {
-      var w = Weights[2][j][i];
-      sum += w * lastLayerDelta[j];
-    }
-    /*
-    for (var j = 0; j < Settings.neurons[3]; ++j) {
-      for (var one of Weights[2][j]) {
-        sum += one * lastLayerDelta[j];
-      }
-    }
-    */
-    secondLayerDelta.push(sum * oi * (1 - oi));
-  }
-
-  // 1st layer 
-  var firstLayerDelta = [];
-  for (var i = 0; i < Settings.neurons[1]; ++i) {
-    var sum = 0;
-    var oi = outputs.O[0][i];
-    
-    for (var j = 0; j < Settings.neurons[2]; ++j) {
-      var w = Weights[1][j][i];
-      sum += w * secondLayerDelta[j];
-    }
-    /*
-    for (var j = 0; j < Settings.neurons[2]; ++j) {
-      for (var one of Weights[1][j]) {
-        sum += one * secondLayerDelta[j];
-      }
-    }
-    */
-    firstLayerDelta.push(sum * oi * (1 - oi));
-  }
-  //console.log(`last d ${JSON.stringify(lastLayerDelta)}`);
-  //console.log(`2nd d ${JSON.stringify(secondLayerDelta)}`);
-  //console.log(`1st d ${JSON.stringify(firstLayerDelta)}`);
-
-  // change Weights
-  for (var j = 0; j < Settings.neurons[1]; ++j) {
-    for (var i = 0; i < Weights[0][j].length; ++i) {
-      var ip = input[i];
-      Weights[0][j][i] -= firstLayerDelta[j] * ip * Settings.learningRate; 
-    }
-  }
-  for (var j = 0; j < Settings.neurons[2]; ++j) {
-    for (var i = 0; i < Weights[1][j].length; ++i) {
-      var oi = outputs.O[0][i];
-      Weights[1][j][i] -= secondLayerDelta[j] * oi * Settings.learningRate; 
-    }
-  }
-
-  for (var j = 0; j < Settings.neurons[3]; ++j) {
-    for (var i = 0; i < Weights[2][j].length; ++i) {
-      var oi = outputs.O[1][i];
-      Weights[2][j][i] -= lastLayerDelta[j] * oi * Settings.learningRate; 
-    }
-  }
-
-  // change Bias
-  
-  for (var i = 0; i < Bias[0].length; ++i) {
-     Bias[0][i] -= firstLayerDelta[i] * Settings.learningRate; 
-  }
-  for (var i = 0; i < Bias[1].length; ++i) {
-    var oi = outputs.O[0][i];
-     Bias[1][i] -= secondLayerDelta[i] * Settings.learningRate; 
-  }
-  for (var i = 0; i < Bias[2].length; ++i) {
-     Bias[2][i] -= lastLayerDelta[i] * Settings.learningRate; 
-  }
-  
-
-  Changed.w = Weights;
-  Changed.b = Bias;
-  Changed.ld = [firstLayerDelta, secondLayerDelta, lastLayerDelta];
-  return Changed;
-}
-
 function calcError(input, Weights, Bias, desired) {
   var output = calcFourLayers(input, Weights, Bias);
   // old version
@@ -212,97 +89,6 @@ function calcError(input, Weights, Bias, desired) {
   return sum;
 } 
 
-function learnOne(steps) {
-  var w = initWeights(0.05);
-  var b = initBias(0.05);
-  var p5 = patternToInput(DATA[5].pattern);
-  var o = calc4Layers(p5, w, b);
-  console.log(JSON.stringify(o));
-  var res = backprop4Layer(o, w, b, DATA[5].sign, p5);
-  // console.log(JSON.stringify(res.w));
-  for (var i = 0; i < steps; ++i) {
-    o = calc4Layers(p5, res.w, res.b);
-    res = backprop4Layer(o, res.w, res.b, DATA[5].sign, p5);
-  }
-  dumpWeights(res.w);
-  var e = calcError(p5, res.w, res.b, DATA[5].sign);
-  console.log(`final error ${e} after ${steps} steps`)
-  return {w: res.w, b: res.b, p: p5, ld: res.ld};
-}
-
-function testBack() {
-  var w = initWeights(0.1);
-  var b = initBias(0.1);
-  var p5 = patternToInput(DATA[5].pattern);
-  p5 = p5.map(x => x = x == 0 ? 0.001 : x);
-  var o = calc4Layers(p5, w, b);
-  var res = backprop4Layer(o, w, b, DATA[5].sign, p5);
-  // dumpWeights(res.w);
-  return {w: res.w, b: res.b, p: p5};
-}
-
-function testItBack() {
-  // reduce DATA to learn
-  //var patch = DATA.slice(DATA.length - 4);
-  var patch = DATA;
-  var w = initWeights(0.25, 0.1);
-  var b = initBias(0.025);
-  var sample = DATA[2];
-  var px = patternToInput(sample.pattern);
-  
-  var o = calc4Layers(px, w, b);
-  var res = backprop4Layer(o, w, b, sample.sign, px);
-
-  // accuracy parameter seems to be critical for the result -- so far 0.07 does well
-  res = trainPatchRandomly(res, patch, 0.075);
-  var rounds = res.rounds;
-
-  var right = checkLearningResults(res, patch);
-
-  return {w: res.w, b: res.b, p: px, right: right/patch.length, rounds: rounds, patch: patch};
-}
-
-function trainPatch(WeightsBias, patch, accuracy) {
-  var res = WeightsBias;
-  var rounds = 0;
-  var success = false;
-  for (var k = 0; k < 1024; ++k) {
-    for (var one of patch) {
-      var p = patternToInput(one.pattern);
-      while(calcError(p, res.w, res.b, one.sign) > accuracy) {
-        o = calc4Layers(p, res.w, res.b);
-        res = backprop4Layer(o, res.w, res.b, one.sign, p);
-        ++rounds;
-        if(!(rounds%2.5e4)) success = true;
-      }
-      if(success) console.log(`learning round ${rounds}`);
-      success = false;
-    }
-  }
-  return {w: res.w, b: res.b, rounds: rounds}
-}
-
-function trainPatchRandomly(WeightsBias, patch, accuracy) {
-  var res = WeightsBias;
-  var rounds = 0;
-  var success = false;
-  for (var k = 0; k < 2048 * patch.length; ++k) {
-    var x = Math.floor(Math.random() * (patch.length + 1)) % patch.length;
-    var one = patch[x];
-    var p = patternToInput(one.pattern);
-    while(calcError(p, res.w, res.b, one.sign) > accuracy) {
-      o = calc4Layers(p, res.w, res.b);
-      res = backprop4Layer(o, res.w, res.b, one.sign, p);
-      ++rounds;
-      if(!(rounds%2.5e4)) success = true;
-    }
-    if(success) console.log(`learning round ${rounds}`);
-    success = false;
-    
-  }
-  return {w: res.w, b: res.b, rounds: rounds}
-}
- 
 function checkLearningResults(WeightsBias, patch) {
   var res = WeightsBias;
   var right = 0;
@@ -318,34 +104,6 @@ function checkLearningResults(WeightsBias, patch) {
     } 
   }
   return right;
-}
-
-
-function learnNewDigit(WeightsBias, digit, patch, accuracy) {
-  var newPatch = patch;
-  var i = 0;
-  while(DATA[i].sign != digit){
-    ++i;
-  }
-
-  newPatch.push(DATA[i]);
-  var res = trainPatch(WeightsBias, newPatch, accuracy);
-  var rounds = res.rounds;
-  var right = checkLearningResults(res, newPatch);
-
-  console.log(JSON.stringify(newPatch));
-  return {w: res.w, b: res.b, rounds: rounds, right: right}
-}
-
-
-function further(data){
-  var w = data.w;
-  var b = data.b;
-  var p = data.p;
-  var l = randomLearn(p, w, b, 1, 8e4);
-  var o = calcFourLayers(p, l.w, l.b);
-  console.log(JSON.stringify(o));
-  return data;
 }
 
 function dumpWeights(weights){
@@ -383,4 +141,61 @@ function showFinalLayers(data) {
     format.push(`(${i}) ${s.substring(0,6)}`);
   }
   console.log(format.join('  '));
+}
+
+function testBy(method) {
+  var w = initWeights(0.25, 0.1);
+  var b = initBias(0.025);
+  var p5 = patternToInput(DATA[5].pattern);
+  p5 = p5.map(x => x = x == 0 ? 0.001 : x);
+  var o = calc4Layers(p5, w, b);
+  var res = method(o, w, b, DATA[5].sign, p5);
+  // dumpWeights(res.w);
+  return {w: res.w, b: res.b, p: p5};
+}
+
+function testItBy(method) {
+  var patch = DATA;
+  var w = initWeights(0.25, 0.1);
+  var b = initBias(0.025);
+  var sample = DATA[2];
+  var px = patternToInput(sample.pattern);
+  
+  var o = calc4Layers(px, w, b);
+  var res = method(o, w, b, sample.sign, px);
+
+  // accuracy parameter seems to be critical for the result -- so far 0.07 does well
+  res = trainPatchRandomlyBy(res, patch, 0.075, method);
+  var rounds = res.rounds;
+
+  var right = checkLearningResults(res, patch);
+
+  return {w: res.w, b: res.b, p: px, right: right/patch.length, rounds: rounds, patch: patch};
+}
+
+function trainPatchRandomlyBy(WeightsBias, patch, accuracy, method) {
+  var res = WeightsBias;
+  var rounds = 0;
+  var success = false;
+  for (var k = 0; k < 128 * patch.length; ++k) {
+    var x = Math.floor(Math.random() * (patch.length + 1)) % patch.length;
+    var one = patch[x];
+    var p = patternToInput(one.pattern);
+    while(calcError(p, res.w, res.b, one.sign) > accuracy) {
+      o = calc4Layers(p, res.w, res.b);
+      res = method(o, res.w, res.b, one.sign, p);
+      ++rounds;
+      if(!(rounds%2.5e4)) success = true;
+    }
+    if(success) console.log(`learning round ${rounds} error ${calcError(p, res.w, res.b, one.sign)} k/patch.length ${k/patch.length}`);
+    success = false;
+    
+  }
+  return {w: res.w, b: res.b, rounds: rounds}
+}
+
+function loadDefaultTrainingData() {
+  var id = document.getElementById('dataCount');
+  DATA = DEFAULT;
+  id.textContent = `${DATA.length} entries`;
 }
