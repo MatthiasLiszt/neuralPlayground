@@ -72,8 +72,14 @@ function calc4Layers(input, Weights, Bias) {
   return {last: o3, O: [o1, o2, o3]};
 }
 
-function calcError(input, Weights, Bias, desired) {
-  var output = calcFourLayers(input, Weights, Bias);
+function calc3Layers(input, Weights, Bias) {
+  var o1 = calcLayer(input, Weights[0], Bias[0]);
+  var o2 = calcLayer(o1, Weights[1], Bias[1]);
+  return {last: o2, O: [o1, o2]};
+}
+
+function calcError(input, Weights, Bias, desired, calcAllLayers) {
+  var output = calcAllLayers(input, Weights, Bias).last;
   // old version
   // return 0.5 * (output[desired] - 1) ** 2;
 
@@ -92,13 +98,14 @@ function calcError(input, Weights, Bias, desired) {
 function checkLearningResults(WeightsBias, patch) {
   var res = WeightsBias;
   var right = 0;
+  var calcAllLayers = Settings.layers == 3 ? calc3Layers : calc4Layers;
   for (let one of patch) {
     var p = patternToInput(one.pattern);
-    o = calcFourLayers(p, res.w, res.b);
+    o = calcAllLayers(p, res.w, res.b).last;
     if (one.sign == findMax(o).at ) {
       showFinalLayers(o);
       console.log(`brain recognized ${one.sign}`);
-      var ex = calcError(p, res.w, res.b, one.sign);
+      var ex = calcError(p, res.w, res.b, one.sign, calcAllLayers);
       console.log(`error for ${one.sign} ${ex}`);
       ++right;
     } 
@@ -143,15 +150,47 @@ function showFinalLayers(data) {
   console.log(format.join('  '));
 }
 
-function testBy(method) {
+function testBy(method, calcAllLayers) {
   var w = initWeights(0.25, 0.1);
   var b = initBias(0.025);
   var p5 = patternToInput(DATA[5].pattern);
   p5 = p5.map(x => x = x == 0 ? 0.001 : x);
-  var o = calc4Layers(p5, w, b);
-  var res = method(o, w, b, DATA[5].sign, p5);
+  //var o = calc4Layers(p5, w, b);
+  var o = calcAllLayers(p5, w, b);
+  console.log(JSON.stringify(o));
+  var sign = DATA[5].sign;
+  var res = method(o, w, b, sign, p5);
   // dumpWeights(res.w);
-  return {w: res.w, b: res.b, p: p5};
+  var error = calcError(p5, res.w, res.b, sign, calcAllLayers);
+  return {w: res.w, b: res.b, p: p5, error: error, ld: res.ld};
+}
+
+function testXstepsBy(method, calcAllLayers, steps) {
+  var w = initWeights(0.25, 0.1);
+  var b = initBias(0.025);
+  var p5 = patternToInput(DATA[5].pattern);
+  p5 = p5.map(x => x = x == 0 ? 0.001 : x);
+  var sign = DATA[5].sign;
+  var o = calcAllLayers(p5, w, b);
+  var res = method(o, w, b, sign, p5);
+  var error = calcError(p5, res.w, res.b, sign, calcAllLayers);
+  var best = 1e3;
+
+  for (var i = 0; i < steps; ++i) {
+    //o = calc4Layers(p5, w, b);
+    o = calcAllLayers(p5, w, b);
+    var hardCopy = JSON.parse(JSON.stringify(res));
+    res = method(o, res.w, res.b, sign, p5);
+    error = calcError(p5, res.w, res.b, sign, calcAllLayers);
+    if (error < best) {
+      best = error;
+    } else {
+      res = hardCopy;
+    }
+  }
+
+  error = calcError(p5, res.w, res.b, sign, calcAllLayers);
+  return {w: res.w, b: res.b, p: p5, error: error, ld: res.ld, best: best};
 }
 
 function testItBy(method) {
@@ -161,11 +200,12 @@ function testItBy(method) {
   var sample = DATA[2];
   var px = patternToInput(sample.pattern);
   
-  var o = calc4Layers(px, w, b);
+  var calcAllLayers = Settings.layers == 3 ? calc3Layers : calc4Layers;
+  var o = calcAllLayers(px, w, b);
   var res = method(o, w, b, sample.sign, px);
 
   // accuracy parameter seems to be critical for the result -- so far 0.07 does well
-  res = trainPatchRandomlyBy(res, patch, 0.075, method);
+  res = trainPatchRandomlyBy(res, patch, 0.152, method, 6e4);
   var rounds = res.rounds;
 
   var right = checkLearningResults(res, patch);
@@ -173,23 +213,34 @@ function testItBy(method) {
   return {w: res.w, b: res.b, p: px, right: right/patch.length, rounds: rounds, patch: patch};
 }
 
-function trainPatchRandomlyBy(WeightsBias, patch, accuracy, method) {
+function trainPatchRandomlyBy(WeightsBias, patch, accuracy, method, maxUnit) {
   var res = WeightsBias;
   var rounds = 0;
   var success = false;
-  for (var k = 0; k < 128 * patch.length; ++k) {
+  var k = 0;
+  var calcAllLayers = Settings.layers == 3 ? calc3Layers : calc4Layers;
+  while (k < 1e4 * patch.length) {
     var x = Math.floor(Math.random() * (patch.length + 1)) % patch.length;
     var one = patch[x];
     var p = patternToInput(one.pattern);
-    while(calcError(p, res.w, res.b, one.sign) > accuracy) {
-      o = calc4Layers(p, res.w, res.b);
+    var innerRounds = 0;
+    while(calcError(p, res.w, res.b, one.sign, calcAllLayers) > accuracy && innerRounds < maxUnit) {
+      o = calcAllLayers(p, res.w, res.b);
       res = method(o, res.w, res.b, one.sign, p);
       ++rounds;
-      if(!(rounds%2.5e4)) success = true;
+      ++innerRounds;
+      if(!(rounds%2.5e4)){success = true};
+      if(success) {
+        console.log(`learning round ${rounds} error ${calcError(p, res.w, res.b, one.sign, calcAllLayers)} k/patch.length ${k/patch.length}`);
+        success = false;
+      }
     }
-    if(success) console.log(`learning round ${rounds} error ${calcError(p, res.w, res.b, one.sign)} k/patch.length ${k/patch.length}`);
-    success = false;
-    
+    if(!(rounds%2.5e4)){success = true};
+    if(success) {
+      console.log(`learning round ${rounds} error ${calcError(p, res.w, res.b, one.sign, calcAllLayers)} k/patch.length ${k/patch.length}`);
+      success = false;
+    }
+     ++k;
   }
   return {w: res.w, b: res.b, rounds: rounds}
 }

@@ -7,13 +7,15 @@
     <script src="fastBackpropagation.js"></script>
     <!--script src="addData.js"></script-->
     <script src="../cheats/trainingsData.js"></script>
+    <script src="../cheats/solution.js"></script>
   </head>
   <body>
     <h1>training</h1>
     <div id="dataCount">entries 0</div>
     <ul>
       <button onclick = "loadDefaultTrainingData(); Cache = {}; Mode = 'idle'">load default data</button>
-      <button onclick = "Cache = testItBy(backprop4Layer); Mode = 'training'">train with classic backpropagation</button>
+      <button onclick = "Cache = testItBy(classicBackProp); Mode = 'training'">train with CLASSIC backpropagation</button>
+      <button onclick = "Cache = testItBy(fastBackProp); Mode = 'training'">train with FAST backpropagation</button>
       <button onclick = "extractBrain()">extract and show trained neural net</button>
       <button onclick = "compressBrain()">compress and show trained neural net</button>
     </ul>
@@ -67,6 +69,16 @@
           }
         }
         Response.textContent = `${JSON.stringify(Cache)}`;
+      }
+
+      function classicBackProp() {
+        if(Settings.layers == 3) return backprop3Layer;
+        if(Settings.layers == 4) return backprop4Layer;
+      }
+
+      function fastBackProp() {
+        if(Settings.layers == 3) return backpropFast3Layer;
+        if(Settings.layers == 4) return backpropFast4Layer;
       }
     </script>
   </body>

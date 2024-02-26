@@ -31,5 +31,11 @@ var DEFAULT = [
   {"pattern":4775,"sign":7},
   {"pattern":27307,"sign":8},
   {"pattern":14766,"sign":9},
-  {"pattern":11118,"sign":0}
+  {"pattern":11118,"sign":0},
+
+  {"pattern":18740,"sign":1},{"pattern":29994,"sign":2},
+  {"pattern":14819,"sign":3},{"pattern":18924,"sign":4},
+  {"pattern":30862,"sign":5},{"pattern":10958,"sign":6},
+  {"pattern":27310,"sign":8},{"pattern":5287,"sign":7},
+  {"pattern":27118,"sign":9},{"pattern":15211,"sign":0}
 ];

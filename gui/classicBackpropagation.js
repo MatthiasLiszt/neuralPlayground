@@ -89,6 +89,75 @@ function backprop4Layer(outputs, Weights, Bias, target, input) {
   return Changed;
 }
 
+// only supports sigmoid function as activation function
+function backprop3Layer(outputs, Weights, Bias, target, input) {
+  var Changed = {w: [] , b: []};
+
+  //create targets from target value
+  var targets = [];
+  for (var i = 0; i < 10; ++i) {
+    var value = 0.01;
+    value = i == target ? 1 : value;
+    targets.push(value);
+  }
+
+  // calculate little deltas
+  
+  // last layer
+  var lastLayerDelta = [];
+  for (var i = 0; i < Settings.neurons[2]; ++i) {
+    var oj = outputs.last[i];
+    var tj = targets[i];
+    var dj = (oj - tj) * oj * (1 - oj);
+
+    lastLayerDelta.push(dj);
+  }
+
+  // 1st layer 
+  var firstLayerDelta = [];
+  for (var i = 0; i < Settings.neurons[1]; ++i) {
+    var sum = 0;
+    var oi = outputs.O[0][i];
+    
+    for (var j = 0; j < Settings.neurons[2]; ++j) {
+      var w = Weights[1][j][i];
+      sum += w * lastLayerDelta[j];
+    }
+    var ch = sum * oi * (1 - oi);
+    if (isNaN(ch)) {console.log('first layer ' + i + ' ' + j)}
+    firstLayerDelta.push(sum * oi * (1 - oi));
+  }
+
+  // change Weights
+  for (var j = 0; j < Settings.neurons[1]; ++j) {
+    for (var i = 0; i < Weights[0][j].length; ++i) {
+      var oi = input[i];
+      Weights[0][j][i] -= firstLayerDelta[j] * oi * Settings.learningRate; 
+    }
+  }
+  for (var j = 0; j < Settings.neurons[2]; ++j) {
+    for (var i = 0; i < Weights[1][j].length; ++i) {
+      var oi = outputs.O[0][i];
+      Weights[1][j][i] -= lastLayerDelta[j] * oi * Settings.learningRate; 
+    }
+  }
+
+  // change Bias
+  
+  for (var i = 0; i < Bias[0].length; ++i) {
+     Bias[0][i] -= firstLayerDelta[i] * Settings.learningRate; 
+  }
+  for (var i = 0; i < Bias[1].length; ++i) {
+     Bias[1][i] -= lastLayerDelta[i] * Settings.learningRate; 
+  }
+  
+
+  Changed.w = Weights;
+  Changed.b = Bias;
+  Changed.ld = [firstLayerDelta, lastLayerDelta];
+  return Changed;
+}
+
 function learnOne(steps) {
   var w = initWeights(0.05);
   var b = initBias(0.05);
