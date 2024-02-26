@@ -1,7 +1,6 @@
 // only supports sigmoid function as activation function
 function backpropFast4Layer(outputs, Weights, Bias, target, input) {
   var Changed = {w: [] , b: []};
-  var WeightsBias = {Weights: Weights, Bias: Bias};
   
   //create targets from target value
   var targets = [];
@@ -83,7 +82,6 @@ function backpropFast4Layer(outputs, Weights, Bias, target, input) {
 
 function backpropFast3Layer(outputs, Weights, Bias, target, input) {
   var Changed = {w: [] , b: []};
-  var WeightsBias = {Weights: Weights, Bias: Bias};
   
   //create targets from target value
   var targets = [];

@@ -150,12 +150,12 @@ function showFinalLayers(data) {
   console.log(format.join('  '));
 }
 
-function testBy(method, calcAllLayers) {
+function testBy(method) {
+  var calcAllLayers = Settings.layers == 3 ? calc3Layers : calc4Layers;
   var w = initWeights(0.25, 0.1);
   var b = initBias(0.025);
   var p5 = patternToInput(DATA[5].pattern);
   p5 = p5.map(x => x = x == 0 ? 0.001 : x);
-  //var o = calc4Layers(p5, w, b);
   var o = calcAllLayers(p5, w, b);
   console.log(JSON.stringify(o));
   var sign = DATA[5].sign;
@@ -165,7 +165,8 @@ function testBy(method, calcAllLayers) {
   return {w: res.w, b: res.b, p: p5, error: error, ld: res.ld};
 }
 
-function testXstepsBy(method, calcAllLayers, steps) {
+function testXstepsBy(method, steps) {
+  var calcAllLayers = Settings.layers == 3 ? calc3Layers : calc4Layers;
   var w = initWeights(0.25, 0.1);
   var b = initBias(0.025);
   var p5 = patternToInput(DATA[5].pattern);
@@ -199,7 +200,6 @@ function testItBy(method) {
   var b = initBias(0.025);
   var sample = DATA[2];
   var px = patternToInput(sample.pattern);
-  
   var calcAllLayers = Settings.layers == 3 ? calc3Layers : calc4Layers;
   var o = calcAllLayers(px, w, b);
   var res = method(o, w, b, sample.sign, px);
