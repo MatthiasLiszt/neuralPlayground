@@ -16,6 +16,6 @@ For optimal performance I recommend to run this in a simple http server like
 
 ## Folders
 
-gui ... Gui but also training methods etc 
-results ... working neural networks trained by that repo
-cheats ... training data and trained neural network 
+  gui ... Gui but also training methods etc 
+  results ... working neural networks trained by that repo
+  cheats ... training data and trained neural network 
