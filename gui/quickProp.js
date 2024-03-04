@@ -78,62 +78,6 @@ function initGradients4Layer(outputs, Weights, target, input) {
   };
 }
 
-function initGradients3Layer(outputs, Weights, target, input) {
-  //create targets from target value
-  var targets = [];
-  for (var i = 0; i < 10; ++i) {
-    var value = 0.01;
-    value = i == target ? 1 : value;
-    targets.push(value);
-  }
-
-  // calculate little gradients
-  
-  // last layer
-  var lastLayerDelta = [];
-  var lastLayerGradient = [];
-  for (var i = 0; i < Settings.neurons[2]; ++i) {
-    var oj = outputs.last[i];
-    var tj = targets[i];
-    var dj = (tj - oj) * oj * (1 - oj);
-
-    lastLayerDelta.push(dj);
-    lastLayerGradient.push([]);
-    var preliminary = [];
-    for(var j = 0; j < Settings.neurons[1]; ++j) {
-      var ox = outputs.O[1];
-      preliminary.push(dj * ox[j]);
-    }
-    lastLayerGradient.push(preliminary);
-  }
-
-  // 1st layer 
-  var firstLayerDelta = [];
-  var firstLayerGradient = [];
-  for (var i = 0; i < Settings.neurons[1]; ++i) {
-    var sum = 0;
-    var oi = outputs.O[0][i];
-    
-    for (var j = 0; j < Settings.neurons[2]; ++j) {
-      //var w = Weights[0][j][i];
-      sum += lastLayerGradient[i][j];
-    }
-    firstLayerDelta.push(sum * oi * (1 - oi));
-    firstLayerGradient.push([]);
-    var preliminary = [];
-    for(var j = 0; j < Settings.neurons[0]; ++j) {
-      var ox = input;
-      preliminary.push(dj * ox[j]);
-    }
-    firstLayerGradient.push(preliminary);
-  }
-
-  return {
-    gradients: [firstLayerGradient, lastLayerGradient],
-    nodeDeltas: [firstLayerDelta, lastLayerDelta], 
-  };
-}
-
 // only supports sigmoid function as activation function
 function quickprop4Layer(outputs, Weights, Bias, target, input, Gradients, oldGradients, nodeDeltas, oldNodeDeltas) {
   var Changed = {w: [] , b: []};

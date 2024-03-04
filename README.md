@@ -7,6 +7,8 @@ So far classic backpropagation and a faster optimiztion have been tested.
 
 It let's you create input data by a 3x5 matrix which was used to input images of digits.
 
+To see neural net trained with this program take a look at https://codepen.io/mahagugu/full/jOJRjGK 
+
 ## Getting started
 
 For optimal performance I recommend to run this in a simple http server like 

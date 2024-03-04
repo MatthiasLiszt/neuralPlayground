@@ -224,9 +224,14 @@ function trainPatchRandomlyBy(WeightsBias, patch, accuracy, method, maxUnit) {
     var one = patch[x];
     var p = patternToInput(one.pattern);
     var innerRounds = 0;
-    while(calcError(p, res.w, res.b, one.sign, calcAllLayers) > accuracy && innerRounds < maxUnit) {
+    var previousError = calcError(p, res.w, res.b, one.sign, calcAllLayers);
+    var error = previousError;
+    while(error > accuracy && innerRounds < maxUnit) {
       o = calcAllLayers(p, res.w, res.b);
+      var hardCopy = JSON.parse(JSON.stringify(res));
       res = method(o, res.w, res.b, one.sign, p);
+      error = calcError(p, res.w, res.b, one.sign, calcAllLayers);
+      res = error < previousError ? res : hardCopy; 
       ++rounds;
       ++innerRounds;
       if(!(rounds%2.5e4)){success = true};
