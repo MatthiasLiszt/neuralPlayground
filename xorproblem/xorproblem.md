@@ -5,6 +5,14 @@ I suppose that is already done in the hidden layer of neural networks but that
 comes with the need of more complex learning algorithms like back propagation 
 and more complicate activation functions like sigmoid. 
 
+## Very simple explanation 
+
+The input is forwareded to two different neurons that work and are trained independently.
+One neurons looks if there are two zeros and the other one if there are two ones. The output
+of both is then forwarded to yet another neuron that has to figure out if any of the previous 
+neurons fired or detected a pair the result is wrong. Actually, that is what a XOR does -- 
+detecting if two equal inputs or a pair. The simple original perceptron from
+Rosenblatt could not do that but that's a simple work around or solution to the problem. 
 
 ## Background to the solution
 
