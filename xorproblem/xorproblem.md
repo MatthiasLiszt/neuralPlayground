@@ -14,11 +14,12 @@ be a bit too abstract for those not familiar with I give a sample.
 
 # Truth table for XOR
 
- a b 
- 0 0 | 0
- 0 1 | 1  = !a && b
- 1 0 | 1  =  a && !b
- 1 1 | 0  
+|a | b|   |            |
+|--|--|---|------------|
+|0 | 0| 0 |            |
+|0 | 1| 1 | = !a && b  |
+|1 | 0| 1 | =  a && !b |
+|1 | 1| 0 |            |
 
 Thus the logical formula derived from the truth table for XOR is: (!a && b) || (a && !b)
 
