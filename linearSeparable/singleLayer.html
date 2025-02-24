@@ -1,0 +1,35 @@
+<html>
+  <body>
+    <h1> training data linear separable?</h1>
+    <script src = "../cheats/trainingsData.js"></script>
+    <script>
+    const DATA = DEFAULT;
+    
+    for(let checkDigit = 0; checkDigit < 10; ++checkDigit){
+      let solution = 0;
+
+      for(let limit = 1; limit < 2 ** 16; ++limit){
+        let lower = false;
+        let upper = false;
+        let upperPatternsThere = false;
+        let lowerPatternsThere = false;
+        for (let one of DATA) {
+          lower = one.pattern < limit && one.sign == checkDigit;
+          upper = one.pattern > limit && one.sign == checkDigit;
+          upperPatternsThere = one.pattern > limit;
+          lowerPatternsThere = one.pattern < limit;
+        }
+        
+        if(upperPatternsThere && lowerPatternsThere) {
+          solution = (lower && !upper) || (!lower && upper) ? limit : 0; 
+        }
+      }
+      if (solution > 0) {
+        console.log(`digit ${checkDigit} separable at ${solution}`);
+      } else {
+        console.log(`digit ${checkDigit} not separable linearly from dataset`);
+      }
+    }
+    </script>
+  </body>
+</html>

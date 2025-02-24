@@ -1,0 +1,55 @@
+<html>
+  <body>
+    <h1> training of filters</h1>
+    <div id="RESPONSE">
+    </div>
+    <script src = "filter.js"></script>
+    <script>
+    const RESPONSE = document.getElementById('RESPONSE');
+    // training data
+    const VERTICAL1 = [{pattern: 0b1010, result: 1, name: "VERTICAL1"}];
+    const VERTICAL2 = [{pattern: 0b0101, result: 1, name: "VERTICAL2"}];
+    const HORIZONTAL1 = [{pattern: 0b0011, result: 1, name: "HORIZONTAL1"}];
+    const HORIZONTAL2 = [{pattern: 0b1100, result: 1, name: "HORIZONTAL2"}];
+    const DIAGONAL1 = [{pattern: 0b1001, result: 1, name: "DIAGONAL1"}];
+    const DIAGONAL2 = [{pattern: 0b0110, result: 1, name: "DIAGONAL2"}];
+    const DOT1 = [{pattern: 0b1, result: 1, name: "DOT1"}];
+    const DOT2 = [{pattern: 0b10, result: 1, name: "DOT2"}];
+    const DOT3 = [{pattern: 0b100, result: 1, name: "DOT3"}];
+    const DOT4 = [{pattern: 0b1000, result: 1, name: "DOT4"}];
+    const CORNER1 = [{pattern: 0b111, result: 1, name: "CORNER1"}];
+    const CORNER2 = [{pattern: 0b1011, result: 1, name: "CORNER2"}];
+    const CORNER3 = [{pattern: 0b1101, result: 1, name: "CORNER3"}];
+    const CORNER4 = [{pattern: 0b1110, result: 1, name: "CORNER4"}];
+
+    const FILTERS = [VERTICAL1, VERTICAL2, HORIZONTAL1, HORIZONTAL2, DIAGONAL1, DIAGONAL2, DOT1, DOT2, DOT3, DOT4, CORNER1, CORNER2, CORNER3, CORNER4];
+
+    // expand training data
+    for(let one of FILTERS){
+      for(let i = 0; i < 16; ++i) {
+        if (one[0].pattern != i) one.push({pattern: i, result: 0});
+      }
+    }
+
+    //RESPONSE.textContent = JSON.stringify(VERTICAL1); 
+
+    //train filters
+    let DATA = [];
+    let TRAINED = [];
+
+    for(let one of FILTERS){
+      // initialize bias and weights
+      var w = initWeights(0.25, 0.1);
+      var b = initBias(0.025);
+      
+      DATA = one;
+      trainX(1e4);
+      const success = checkTraining();
+      RESPONSE.textContent += `${one[0].name} success ${success * 100}% weights ${JSON.stringify(weights)} bias ${bias[0][0]}`;
+      TRAINED.push({name: one[0].name, weights, bias, success}); 
+    }
+
+  
+    </script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+body {
+  background-color: black;
+}
+
+h1 {
+  color: white;
+}
+h3 {
+  color: white;
+}
+
+h3 a {
+  color: white;
+}
+.data {
+  height: 42px;
+  width: 42px;
+  color: white;
+  border-color: black;
+  margin: 0px;
+  padding: 0px;
+  background-color: grey;
+}
+
+#data {
+  width: 150px;
+  height: 240px;
+}
+
+body {
+  margin: 23px;
+}
+
+#dataCount {
+  float: right;
+}
+
+#numberInput {
+  width: 150px;
+  height: 240px;
+}
+
+#numberInput button {
+  height: 42px;
+  width: 42px;
+  background-color: lightgrey;
+}
+
+#response {
+  margin-top: 12px;
+  padding: 12px;
+  color: black;
+  background-color: white;
+}
