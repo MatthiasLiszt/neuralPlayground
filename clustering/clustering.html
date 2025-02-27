@@ -1,0 +1,38 @@
+<html>
+<body>
+  <h1>categorizing data by k-means clustering for a 3x3 grid</h1>
+  <script src = "../cheats/trainingsData.js"></script>
+  <script src = "clustering.js"></script>
+  <script>
+    const DATA = DEFAULT;
+    const patterns = getPatternsFromData(DATA);
+
+    console.log(`${patterns.length} distinct patterns`);
+
+    let bestgrouping = [];
+    let worstDistance = 1e3;
+
+    for (let i = 2; i < patterns.length / 4 ; ++i) {
+      for(let j = 0; j < 4; ++j) {
+        console.log(`k ${i} run ${j}`);
+        let groups = groupByK(patterns, i);
+        let outcome = getWorstDistance(groups);
+        if (outcome < worstDistance) {
+          bestgrouping = groups;
+          worstDistance = outcome;
+        }
+      }
+    }
+
+    function getWorstDistance(data){
+      let worst = 0;
+      for(let one of data.centroids) {
+        worst = one.distance > worst ? one.distance : worst;  
+      }
+      return worst;
+    }
+
+    console.log(JSON.stringify(bestgrouping));
+  </script>
+</body>
+</html>
