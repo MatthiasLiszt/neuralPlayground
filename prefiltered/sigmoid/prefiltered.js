@@ -3,8 +3,8 @@ const Settings = {
   layers: 2,
   neurons: [30, 10],
   learningRate: 0.01,
-  activation: 'stepfunction',
-  f: x => x >= 1 ? 1 : 0
+  activation: 'sigmoid',
+  f: x => 1/(1 + Math.E**(-x))
 }
 
 // filter
@@ -21,7 +21,7 @@ const allFilters = [verticalFilter, horizontalFilter, diagonalFilter, dotFilter,
 let weights = initWeights(0.25, 0.1);
 let bias = initBias(0.025);
 
-// important functions
+// importat functions
 
 function layerCalc(input, weights, bias) {
   var output = [];
@@ -54,18 +54,21 @@ function trainIt() {
   let errors = [];
 
   for(let i = 0; i < weights[0].length; ++i) {
-    const x = i == one.sign ? 1 : 0;
-    const error = x - output[i];
+    const t = i == one.sign ? 1 : 0.01;
+    const oj = output[i];
+    const dj = (oj - t) * oj * (1 - oj);
+    const error = t - oj;
+
     for(let j = 0; j < weights[0][0].length; ++j) {
-      weights[0][i][j] += Settings.learningRate * error * input[j];
+      //weights[0][i][j] += Settings.learningRate * error * input[j];
+      weights[0][i][j] -= Settings.learningRate * input[j] * dj;
     }
-    bias[0][i] += Settings.learningRate * error;
+    bias[0][i] -= Settings.learningRate * dj;
     errors.push(error);
   }
 
-  console.log(`${one.sign}, ${JSON.stringify(input)}`); // ${JSON.stringify(errors)});
+  console.log(`${one.sign}, ${JSON.stringify(input)}`); 
   console.log(`${JSON.stringify(output)}`);
-  //console.log(JSON.stringify(weights));
   
   return {output: output[one.sign], input, errors}
 }
@@ -88,14 +91,11 @@ function checkTraining(){
     var input = patternFiltered(one.pattern); 
     
     const output = layerCalc(input, weights, bias);
-
-    const o = output;
-    const sum1 = o[0] + o[1] + o[2] + o[3] + o[4];
-    const sum = o[5] + o[6] + o[7] + o[8] + o[9] + sum1;
-    const right = output[one.sign] == 1 && sum == 1;  
+    const max = findMax(output);
+    const right =  max.at == one.sign; 
     const error = !right ? 1 : 0;
     errors += error;
-    console.log(`sum ${sum} ${one.sign} sign ${JSON.stringify(output)}`);
+    console.log(`${one.sign} sign ${max.at} max ${max.max}`);
   }
   return {success: 1 - errors * 0.01, error: errors * 0.01};
 }
@@ -186,4 +186,18 @@ function getTrainData(data){
     complete = selected.length / data.length;
   }
   return selected;
+}
+
+function findMax(field) {
+  var max = field[0];
+  var at = 0;
+  var index = 0;
+  for(var one of field) {
+    if(one > max) {
+      at = index;
+      max = one;
+    }
+    ++index;
+  }
+  return {max: max, at: at};
 }

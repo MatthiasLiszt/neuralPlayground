@@ -1,0 +1,58 @@
+<html>
+<body>
+<h1>extraction of filters from an existing solution from a hidden layer</h1>
+<script src = "../cheats/solution.js"></script>
+<script src = "extraction.js"></script>
+<script>
+const FirstHiddenLayer = SOLUTION.w[0];
+const FirstBias = SOLUTION.b[0];
+
+let lowValues = [];
+
+for (let one of FirstHiddenLayer) {
+  lowValues.push(getLowestValue(one));
+}
+
+let lowestValue = getLowestValue(lowValues);
+
+let connectionsAboveLowestValue = getConnectionsAboveLimit(FirstHiddenLayer, lowestValue);
+let connectionsAboveLimit = getConnectionsAboveLimit(FirstHiddenLayer, 0.01);
+
+let neuron = 0;
+let threshold = 0.5;
+let filterPatterns = [];
+let extractWorthy = [];
+
+// get largest chunks
+let index = 0;
+for (let one of connectionsAboveLowestValue) {
+  let uninterrupted = 0;
+  let bestchunk = 0;
+  if (one < 10) {
+    for (let weight of FirstHiddenLayer[index]){
+      if(weight > lowestValue) {
+        ++uninterrupted; 
+      } else {
+        bestchunk = bestchunk < uninterrupted ? uninterrupted : bestchunk;
+        uninterrupted = 0;  
+      }
+    }
+    console.log(`index ${index} connections ${one} largest chunk ${bestchunk}`);
+    extractWorthy.push({index: index, chunk: uninterrupted});
+  }
+  ++index;
+}
+
+//extract patterns
+for (let one of extractWorthy) {
+  const Patterns = [];
+  for (let input = 0; input < 2 ** one.chunk; ++input) {
+    const Input = numberToInput(input, one.chunk);
+    const out = calculate(Input, FirstHiddenLayer[one.index], FirstBias[one.index]);
+    if (out > threshold) Patterns.push(input); 
+  }
+  filterPatterns.push({index: one.index, chunk: one.chunk, patterns: Patterns});
+}
+</script>
+</body>
+</html>

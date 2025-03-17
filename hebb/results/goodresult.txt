@@ -1,0 +1,68 @@
+[[[0.27561815412685964,0.3033565300655783,0.31873293246174833,0.31296076682533724,0.3174588544151653,0.2905199184015255,0.30593186939689165,0.26664464836439994,0.3376649959943965,0.2666046830034086,0.2612913555524935,0.3216644409771355,0.2541027552712507,0.2599190050443743,0.27292421089997154]]] spike.html:27:13
+{"rights":100,"falsePositives":98.2421875} spike.html:28:13
+weight increase 142516 decrease 235230 sparks 22129 cycles 29970 spike.js:134:11
+{"rights":100,"falsePositives":68.73779296875} spike.html:30:13
+[[[0.0201,0.0101,0.0101,0.0201,0.0201,0.4405199184015256,0.0101,0.0201,0.5576649959943967,0.0101,0.0001,0.5916644409771357,0.0001,0.0101,0.5729242108999718]]] spike.html:31:13
+average 0.152924904418202 spike.js:172:11
+falsePositives 68.73779296875 decrease -0.06103515625 changes 4 spike.js:190:13
+falsePositives 68.6767578125 decrease -0.18310546875 changes 4 spike.js:190:13
+falsePositives 68.49365234375 decrease -0.42724609375 changes 4 spike.js:190:13
+falsePositives 68.06640625 decrease -0.8056640625 changes 4 spike.js:190:13
+falsePositives 67.2607421875 decrease -1.2939453125 changes 4 spike.js:190:13
+falsePositives 65.966796875 decrease -0.79345703125 changes 4 spike.js:190:13
+falsePositives 65.17333984375 decrease -2.25830078125 changes 4 spike.js:190:13
+falsePositives 62.9150390625 decrease -2.67333984375 changes 4 spike.js:190:13
+falsePositives 60.24169921875 decrease -2.7587890625 changes 4 spike.js:190:13
+falsePositives 57.48291015625 decrease -2.5146484375 changes 4 spike.js:190:13
+falsePositives 54.96826171875 decrease -2.01416015625 changes 4 spike.js:190:13
+falsePositives 52.9541015625 decrease -1.40380859375 changes 4 spike.js:190:13
+falsePositives 51.55029296875 decrease -0.69580078125 changes 4 spike.js:190:13
+falsePositives 50.8544921875 decrease -0.62255859375 changes 4 spike.js:190:13
+falsePositives 50.23193359375 decrease -0.4638671875 changes 4 spike.js:190:13
+falsePositives 49.76806640625 decrease -0.62255859375 changes 4 spike.js:190:13
+falsePositives 49.1455078125 decrease -1.0498046875 changes 4 spike.js:190:13
+falsePositives 48.095703125 decrease -1.67236328125 changes 4 spike.js:190:13
+falsePositives 46.42333984375 decrease -1.788330078125 changes 4 spike.js:190:13
+falsePositives 44.635009765625 decrease -2.117919921875 changes 4 spike.js:190:13
+falsePositives 42.51708984375 decrease -2.7587890625 changes 4 spike.js:190:13
+falsePositives 39.75830078125 decrease -2.67333984375 changes 4 spike.js:190:13
+falsePositives 37.0849609375 decrease -2.25830078125 changes 4 spike.js:190:13
+falsePositives 34.82666015625 decrease -1.66015625 changes 4 spike.js:190:13
+falsePositives 33.16650390625 decrease -0.98876953125 changes 4 spike.js:190:13
+falsePositives 32.177734375 decrease -0.59814453125 changes 4 spike.js:190:13
+falsePositives 31.57958984375 decrease -0.244140625 changes 4 spike.js:190:13
+falsePositives 31.33544921875 decrease -0.0732421875 changes 4 spike.js:190:13
+falsePositives 31.26220703125 decrease 0 changes 4 spike.js:190:13
+falsePositives 31.26220703125 decrease -0.01220703125 changes 4 spike.js:190:13
+falsePositives 31.25 decrease 0 changes 4 14 spike.js:190:13
+falsePositives 31.25 decrease -0.01220703125 changes 4 spike.js:190:13
+falsePositives 31.23779296875 decrease -0.06103515625 changes 4 spike.js:190:13
+falsePositives 31.1767578125 decrease -0.152587890625 changes 4 spike.js:190:13
+falsePositives 31.024169921875 decrease -0.103759765625 changes 4 spike.js:190:13
+falsePositives 30.92041015625 decrease -0.59814453125 changes 4 spike.js:190:13
+falsePositives 30.322265625 decrease -1.15966796875 changes 4 spike.js:190:13
+falsePositives 29.16259765625 decrease -1.85546875 changes 4 spike.js:190:13
+falsePositives 27.30712890625 decrease -2.5146484375 changes 4 spike.js:190:13
+falsePositives 24.79248046875 decrease -2.91748046875 changes 4 spike.js:190:13
+falsePositives 21.875 decrease -2.91748046875 changes 4 spike.js:190:13
+falsePositives 18.95751953125 decrease -2.52685546875 changes 4 spike.js:190:13
+falsePositives 16.4306640625 decrease -1.91650390625 changes 4 spike.js:190:13
+falsePositives 14.51416015625 decrease -1.33056640625 changes 4 spike.js:190:13
+falsePositives 13.18359375 decrease -0.96435546875 changes 4 spike.js:190:13
+falsePositives 12.21923828125 decrease -0.86669921875 changes 4 spike.js:190:13
+falsePositives 11.3525390625 decrease -0.927734375 changes 4 spike.js:190:13
+falsePositives 10.4248046875 decrease -1.03759765625 changes 4 spike.js:190:13
+falsePositives 9.38720703125 decrease -1.03759765625 changes 4 spike.js:190:13
+falsePositives 8.349609375 decrease -0.86669921875 changes 4 spike.js:190:13
+falsePositives 7.48291015625 decrease -0.62255859375 changes 4 spike.js:190:13
+falsePositives 6.8603515625 decrease -0.3662109375 changes 4 spike.js:190:13
+falsePositives 6.494140625 decrease -0.1708984375 changes 4 spike.js:190:13
+falsePositives 6.3232421875 decrease -0.06103515625 changes 4 spike.js:190:13
+falsePositives 6.26220703125 decrease 0 changes 4 spike.js:190:13
+falsePositives 6.26220703125 decrease -0.01220703125 changes 4 spike.js:190:13
+falsePositives 6.25 decrease 0 changes 4 7 spike.js:190:13
+falsePositives 6.25 decrease -0.01220703125 changes 4 spike.js:190:13
+{"rights":100,"falsePositives":6.25} spike.html:34:13
+[[[0.0201,0.0101,0.0101,0.0201,0.0201,0.20522976106263696,0.0101,0.0201,0.25980540061892937,0.0101,0.0001,0.2756450884028304,0.0001,0.0101,0.26691437548762115]]] spike.html:35:13
+
+

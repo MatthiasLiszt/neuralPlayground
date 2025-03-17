@@ -1,0 +1,43 @@
+<html>
+  <body>
+  <h1>training a neural network to learn a digit by Hebbian learning</h1>
+  <p>
+     <bold>WARNING !!! </bold> The learning is extremely unstable and might require up to 20 attempts or more. 
+     So if you see no result in the console, reload the whole thing around twenty times. 
+  </p>
+  <script src = '../cheats/trainingsData.js'></script>
+  <script src = 'hebb.js'></script>
+  <script>
+    const DATA = DEFAULT;
+    
+    //get trainigsdata for digit 1 
+    let patternsForOne = [];
+    for (let one of DATA){
+      if(one.sign == 1) patternsForOne.push(one.pattern);
+    }
+
+    //restrict patterns
+    patternsForOne.length = 1;
+
+    //generate random training data for the digit to learn
+    // mixes in a certain amount of random noise patterns 
+
+    let traindata = generateRandomTrainigData(0.3, 3e4, patternsForOne);
+
+    // weight bias initialization
+    let weights = initWeights(0.25, 0.1);
+
+    console.log(JSON.stringify(weights));
+    console.log(JSON.stringify(checkFullTraining(patternsForOne)));
+    trainPatch(traindata);
+    console.log(JSON.stringify(checkFullTraining(patternsForOne)));
+    console.log(JSON.stringify(weights));
+    
+    weights = optimizingWeights(patternsForOne);
+    console.log(JSON.stringify(checkFullTraining(patternsForOne)));
+    console.log(JSON.stringify(weights));
+     
+  </script>
+</body>
+</html>
+
