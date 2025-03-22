@@ -1,13 +1,13 @@
 <html>
 <body>
   <h1>training a spiking neural network to learn a digit</h1>
-  <h3>single layer version</h3>
+  <h3>hidden layer version</h3>
   <p>
     <bold>WARNING !!! </bold> The learning is extremely unstable and might require up to 20 attempts or more. 
     So if you see no result in the console, reload the whole thing around twenty times. 
  </p>
   <script src = '../cheats/trainingsData.js'></script>
-  <script src = 'singlelayer.js'></script>
+  <script src = 'hiddenlayer.js'></script>
   <script src = 'spike.js'></script>
   <script>
     const DATA = DEFAULT;
@@ -18,14 +18,15 @@
       if(one.sign == 1) patternsForOne.push(one.pattern);
     }
 
-    //restrict patterns
-    patternsForOne.length = 1;
+    //restriction
+    patternsForOne = [patternsForOne[0], patternsForOne[2]];
+
     console.log(`patterns to learn ${JSON.stringify(patternsForOne)}`);
 
     //generate random training data for the digit to learn
     // mixes in a certain amount of random noise patterns 
 
-    let traindata = generateRandomTrainigData(0.3, 4e3, patternsForOne);
+    let traindata = generateRandomTrainigData(0.2, 1e4, patternsForOne);
 
     // weight bias initialization
     let weights = initWeights(0.25, 0.1);
@@ -33,10 +34,16 @@
 
     console.log(JSON.stringify(weights));
     console.log(JSON.stringify(checkFullTraining(patternsForOne)));
+
     trainPatch(traindata, patternsForOne);
     console.log(JSON.stringify(checkFullTraining(patternsForOne)));
+
+    cullHiddenLayer(patternsForOne, 0.36);
+    //checkNeuron(patternsForOne, weights[0][0], loads[0]);
+    console.log(JSON.stringify(checkFullTraining(patternsForOne)));
     console.log(JSON.stringify(weights));
-     
+
+    //analyzeBlock(traindata, patternsForOne);
   </script>
 </body>
 </html>
