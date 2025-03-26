@@ -1,0 +1,54 @@
+<html>
+<header>
+  <link rel = 'stylesheet' href = "gui.css">
+</header>
+<body>
+  <h1>learning patterns without backpropagation</h1>
+  <div id = "gui">
+    <div class = "part">
+      <div id="patternsToLearn"></div>
+      <div id="inputGrid">
+        <canvas id="Canvas" width="240" height="240" style="border:1px solid #000000;">
+        </canvas> 
+      </div>
+      <div id ="panel"> 
+        <button id = "addPattern">add</button>
+        <button id = "removePattern">remove</button>
+        <button id = "trainPatterns">train</button>
+        <button id = "testPattern">test</button>
+      </div>
+    </div>
+    <div id = "lamps" class = "part">
+      <div id = "resultLamp"></div>
+      <div id = "workingLamp"></div>
+    </div>
+  </div>
+  <script src = "gui.js"></script>
+  <script>
+    const Canvas = document.getElementById("Canvas");
+    const PatternsToLearn = document.getElementById("patternsToLearn");
+    const AddPattern = document.getElementById("addPattern");
+    const RemovePattern = document.getElementById("removePattern");
+
+    // global variable if DRAWING is enabled 
+    let DRAW = true;
+    // size of one input neuron pixel 
+    let PIXELSIZE = 60;
+
+    // the GRID for the input neurons
+    let GRID = [];
+    initGrid();
+
+    // the patterns to learn
+    let PATTERNS = [];
+    // images of the patterns to learn
+    let IMAGES = [];
+  
+    //Canvas.addEventListener("click", turnDRAWonOff);
+    Canvas.addEventListener("click", (e) => drawPixel(e));
+    AddPattern.addEventListener("click", addPattern);
+    RemovePattern.addEventListener("click", removePattern);
+  </script>
+</body>
+</html>
+

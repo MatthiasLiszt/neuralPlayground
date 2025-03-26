@@ -1,0 +1,25 @@
+body {
+  padding-left: 5em;
+}
+
+#gui .part {
+  display: inline-block;
+}
+
+#patternsToLearn img {
+  padding-left: 1em;
+  padding-bottom: 1em;
+}
+
+#lamps {
+  display: inline-block;
+}
+
+#lamps div {
+  width: 60px;
+  height: 60px;
+  margin: 1em;
+  background-color: grey;
+  display: inline-block;
+}
+
