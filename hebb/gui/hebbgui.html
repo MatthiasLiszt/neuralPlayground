@@ -4,6 +4,11 @@
 </header>
 <body>
   <h1>learning patterns without backpropagation</h1>
+  <select name = "methods" id="learningMethods">
+    <option value = "competitiveOnly">competitive learning only</option>
+    <option value = "competitivePerceptron">competitive with perceptron rule</option>
+    <option value = "perceptronOnly">perceptron rule only</option>
+  </select>
   <div id = "gui">
     <div class = "part">
       <div id="patternsToLearn"></div>
@@ -23,17 +28,28 @@
       <div id = "workingLamp"></div>
     </div>
   </div>
+  <div id="feedback"></div>
+  <script src = 'neural.js'></script>
   <script src = "gui.js"></script>
   <script>
     const Canvas = document.getElementById("Canvas");
     const PatternsToLearn = document.getElementById("patternsToLearn");
+    const LearningMethod = document.getElementById("learningMethods");
+    const FeedBack = document.getElementById("feedback");
     const AddPattern = document.getElementById("addPattern");
     const RemovePattern = document.getElementById("removePattern");
+    const TrainPattern = document.getElementById("trainPatterns");
+    const TestPattern = document.getElementById("testPattern");
+    const WorkingLight = document.getElementById("workingLamp");
+    const ResultLight = document.getElementById("resultLamp");
 
     // global variable if DRAWING is enabled 
     let DRAW = true;
     // size of one input neuron pixel 
     let PIXELSIZE = 60;
+
+    // learning method
+    let METHOD = "competitiveOnly"; 
 
     // the GRID for the input neurons
     let GRID = [];
@@ -48,6 +64,13 @@
     Canvas.addEventListener("click", (e) => drawPixel(e));
     AddPattern.addEventListener("click", addPattern);
     RemovePattern.addEventListener("click", removePattern);
+    TrainPattern.addEventListener("click", trainPattern);
+    TestPattern.addEventListener("click", testPattern);
+    //LearningMethod.addEventListener("change", setLearningMethod);
+
+    // neural net
+    let weights = [];
+
   </script>
 </body>
 </html>

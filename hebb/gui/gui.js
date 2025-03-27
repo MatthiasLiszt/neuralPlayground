@@ -63,3 +63,42 @@ function initGrid(){
     GRID.push(line);
   }
 }
+
+function trainPattern(){
+  const X = Math.floor(Canvas.width/PIXELSIZE);
+  const N = X * X;
+  Settings.neurons = [N, PATTERNS.length * 3, 1];
+  if(PATTERNS.length > 0){
+    WorkingLight.style.background = "red";
+    const traindata = generateRandomTrainingData(0.3, 1e4, PATTERNS);
+    weights = initWeights(0.25, 0.1);
+    switch(LearningMethod.value){
+      case "competitiveOnly":
+        let rate = 1;
+        let repeat = 0;
+        do{ 
+          rate = trainPatchCompetitiveOnly(traindata);
+          ++repeat;
+        } while(repeat < 23 && rate > 0.9);
+        FeedBack.textContent = rate > 0.9 ? "training failed" : "training successful"; 
+        break;
+      case "competitivePerceptron":
+        trainPatchCompetitivePerceptron(traindata, PATTERNS);
+        break;
+      case "perceptronOnly":
+        break;
+    }
+    WorkingLight.style.background = "green";
+  }
+  else {
+    console.log('no patterns to learn');
+  }
+}
+
+function testPattern(){
+  ResultLight.style.background = "grey";
+  const result = layerCalc(GRID.flat(), weights).final;
+  console.log(JSON.stringify(result));
+  ResultLight.style.background = result[0] == 1 ? 'green' : 'grey';
+}
+
