@@ -86,6 +86,9 @@ function trainPattern(){
         trainPatchCompetitivePerceptron(traindata, PATTERNS);
         break;
       case "perceptronOnly":
+        Settings.neurons[1] = PATTERNS.length * 4;
+        weights = initWeights(0.25, 0.1);
+        trainPatchPerceptronOnly(traindata, PATTERNS, createDeficiencies(0.9));
         break;
     }
     WorkingLight.style.background = "green";

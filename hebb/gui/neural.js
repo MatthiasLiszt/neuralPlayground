@@ -234,3 +234,97 @@ function trainNeuronPerceptron(input, error, neuron, layer){
     weights[l][i][j] = weights[l][i][j] < Settings.weightMinimum ? Settings.weightMinimum : weights[l][i][j];
   }
 }
+
+function createDeficiencies(coverage = 0.9){
+  const x = GRID[0].length;
+  const xx = x * x;
+  let deficiencies = [];
+  let history = [];
+  let complete = Array(xx).fill(0);
+  let completeness = 0;
+  let iteration = 0;
+  console.log('create deficiencies ' + x);
+  
+  while (iteration < 1e2 && completeness < coverage){
+    deficiencies = [];
+    for(let i = 0; i < x; ++i){
+      let sample = Array(xx).fill(0);
+      let start = Math.floor(Math.random() * x);
+      let half = Math.random() < 0.5 ? 0 : sample.length * 0.5;
+      while (history.includes(start + half) && history.length < xx){
+        start = Math.floor(Math.random() * x);
+        half = Math.random() < 0.5 ? 0 : sample.length * 0.5;
+      }
+      history.push(start + half);
+      history.push(start + 1 + half);
+      history.push(start + half + x);
+      history.push(start + 1 + half + x);
+      sample[(start + half) % xx] = 1;
+      sample[(start + 1 + half) % xx] = 1;
+      sample[(start + half + x) % xx] = 1;
+      sample[(start + 1 + half + x) % xx] = 1;
+      deficiencies.push(sample); 
+    }
+    console.log(JSON.stringify(deficiencies));
+    complete = Array(xx).fill(0);
+    completeness = 0;
+    for(let one of deficiencies){
+      for(let i = 0; i < xx; ++i){
+        complete[i] = one[i] == 1 ? 1 : complete[i];
+      }
+    }
+    for (let one of complete){
+      completeness += one;
+    }
+    completeness = completeness / xx;
+    console.log(complete.join() + ' completeness ' + completeness);
+    ++iteration;
+  }
+  return deficiencies;
+}
+
+function trainPatchPerceptronOnly(patch, rightPatterns, deficiencies) {
+  console.log(JSON.stringify(weights));
+
+  let RightPatterns = [];
+  for(let one of rightPatterns){
+    RightPatterns.push(one.flat().join());
+  }
+
+  let fired = 0;
+  let errors = 0;
+
+  for(let one of patch) {
+    const hidden = layerCalc(one, weights).mid;
+    for (let i = 0; i < hidden.length; ++i){
+      const right = RightPatterns.includes(one.join()) ? 1 : 0;
+      const error = right - hidden[i];
+      fired += hidden[i] == 1 ? 1 : 0;
+      errors += error != 0 ? 1 : 0;
+      const deficiency = deficiencies[i % GRID[0].length];
+      weights[0][i] = doFilter(weights[0][i], deficiency);
+      trainNeuronPerceptron(doFilter(one, deficiency), error, i, 0);
+    }
+  }
+
+  for(let one of patch) {
+    const all = layerCalc(one, weights);
+
+    // perceptron learning rule 
+    const right = RightPatterns.includes(one.join()) ? 1 : 0;
+    const error = right - all.final[0];
+    trainNeuronPerceptron(all.mid, error, 0, 1);
+
+    fired += all.final[0];
+  }
+  console.log(`fired ${fired} errors ${errors}`);
+  console.log(JSON.stringify(weights));
+}
+
+function doFilter(input, deficiency){
+  let output = [];
+  for(let i = 0; i < input.length; ++i){
+    output.push(deficiency[i] == 1 ? input[i] : 0);
+  }
+  return output;
+}
