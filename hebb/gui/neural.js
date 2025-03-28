@@ -293,11 +293,11 @@ function trainPatchPerceptronOnly(patch, rightPatterns, deficiencies) {
 
   let fired = 0;
   let errors = 0;
-
+  console.log(JSON.stringify(RightPatterns));
   for(let one of patch) {
     const hidden = layerCalc(one, weights).mid;
     for (let i = 0; i < hidden.length; ++i){
-      const right = RightPatterns.includes(one.join()) ? 1 : 0;
+      const right = RightPatterns[Math.floor(i/4)] == one.join() ? 1 : 0;
       const error = right - hidden[i];
       fired += hidden[i] == 1 ? 1 : 0;
       errors += error != 0 ? 1 : 0;
